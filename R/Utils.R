@@ -22,7 +22,7 @@ check_prepared_to_harmonize <- function(Data){
                 stop("The data could not prepared to be harmonized. There was some kind of error when your ran 'prepare_to_harmonize()'")
         }
 
-        check_Data_frame_convert_to_data_table(Data)
+        harmonizePNAD:::check_Data_frame_convert_to_data_table(Data)
 }
 
 
@@ -42,36 +42,49 @@ get_metadata <- function(Data){
 }
 
 
-find_sulfix <- function(Data){
+find_sulfix <- function(Data, general_or_specific){
 
-        metadata <- get_metadata(Data)
+        if(length(general_or_specific) != 1 | !(general_or_specific %in% c("general", "specific"))){
 
-        if(metadata$type == "pnad"){
-
-                if(metadata$year %in% 1973){
-                        sulfix = "pnad1973"
-                }
-
-                if(metadata$year %in% 1976:1979){
-                        sulfix = "pnad1970s"
-                }
-
-                if(metadata$year %in% 1981:1990){
-                        sulfix = "pnad1980s"
-                }
-
-                if(metadata$year %in% 1992:2015){
-                        sulfix = "pnad1990s"
-                }
-
+                stop("'general_or_specific' must be equal to 'general' or 'specific'")
         }
 
-        if(metadata$type == "pnadc"){
-                sulfix = "pnadc"
-        }
+        metadata <- harmonizePNAD:::get_metadata(Data)
 
-        if(metadata$type == "census"){
-                sulfix = paste0("census",metadata$year)
+        if(general_or_specific == "general"){
+
+                sulfix <- metadata$type
+
+        }else{
+
+                if(metadata$type == "pnad"){
+
+                        if(metadata$year %in% 1973){
+                                sulfix = "pnad1973"
+                        }
+
+                        if(metadata$year %in% 1976:1979){
+                                sulfix = "pnad1970s"
+                        }
+
+                        if(metadata$year %in% 1981:1990){
+                                sulfix = "pnad1980s"
+                        }
+
+                        if(metadata$year %in% 1992:2015){
+                                sulfix = "pnad1990s"
+                        }
+
+                }
+
+                if(metadata$type == "pnadc"){
+                        sulfix = "pnadc"
+                }
+
+                if(metadata$type == "census"){
+                        sulfix = paste0("census",metadata$year)
+                }
+
         }
 
         sulfix
@@ -80,9 +93,9 @@ find_sulfix <- function(Data){
 find_function <- function(Data, var_name){
 
         existing_functions <- unclass(lsf.str(envir = asNamespace("harmonizePNAD"), all = T))
-        relevant_functions <- existing_functions[grep(pattern = var_name, x = existing_functions)]
+        relevant_functions <- harmonizePNAD:::existing_functions[grep(pattern = var_name, x = existing_functions)]
 
-        sulfix <- find_sulfix(Data)
+        sulfix <- harmonizePNAD:::find_sulfix(Data, general_or_specific = "specific")
 
         f_parts <- strsplit(relevant_functions, split = "_")[[1]][1:3]
         f_parts <- c(f_parts, sulfix)
@@ -106,7 +119,7 @@ check_var_existence <- function(Data, var_names){
 
 check_necessary_vars <-function(Data, var_names){
 
-        check_vars <- check_var_existence(Data, var_names)
+        check_vars <- harmonizePNAD:::check_var_existence(Data, var_names)
 
         if(length(check_vars) > 0){
                 stop("The following variables are missing from the Data: ",
@@ -128,15 +141,15 @@ build_onTheFly <- function(Data, var_name){
                 stop("'var_name' must be a one-valued character vector")
         }
 
-        check_var <- check_var_existence(Data, var_name)
+        check_var <- harmonizePNAD:::check_var_existence(Data, var_name)
 
-        metadata = check_prepared_to_harmonize(Data)
+        metadata  <- harmonizePNAD:::check_prepared_to_harmonize(Data)
 
         just_created_vars_list()
 
         if(length(check_vars) == 1) {
 
-                f <- find_function(Data, var_name)
+                f    <- harmonizePNAD:::find_function(Data, var_name)
 
                 call <- paste0(f,"(Data)")
                 Data <- eval(parse(text = call))
@@ -149,6 +162,17 @@ build_onTheFly <- function(Data, var_name){
 }
 
 
+
+
+erase_just_created_vars <- function(Data){
+        if(exists("just_created_vars", envir = parent.frame())){
+                if(is.character(just_created_vars)){
+                        just_created_vars <- just_created_vars[just_created_vars %in% names(Data)]
+                        Data[ , c(just_created_vars) := NULL]
+                }
+        }
+        Data
+}
 
 
 
