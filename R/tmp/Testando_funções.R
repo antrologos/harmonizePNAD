@@ -8,6 +8,7 @@ setwd("C:/Dropbox/Rogerio/Bancos_Dados/PNADs/")
 
 anos <- c(1973, 1976:1979,1981, 1990,1992,2006,2015)
 
+ano_i = 2015
 # Abrindo arquivos
 for(ano_i in anos){
         print(ano_i)
@@ -21,9 +22,11 @@ for(ano_i in anos){
         print(ano_i)
         assign(x = paste0("p_", ano_i),
                value = get(paste0(paste0("p_", ano_i))) %>%
+                       harmonize_demographics() %>%
+                       harmonize_geography() %>%
                        build_education_yearsSchooling() %>%
-                       build_identification_wgt() %>%
-                       build_demographics_age())
+                       build_identification_wgt()
+                       )
 }
 
 # Estatísticas
@@ -40,4 +43,15 @@ map_df(.x = anos,
                       yearsSchooling = yearsSchooling_i)
        }
 )
+
+
+map(.x = anos,
+    .f = function(ano_i){
+            freq_uf <- get(paste0("p_", ano_i), envir = .GlobalEnv)[, table(x = regionMCA)]
+            dados   <- data.table(as.numeric(freq_uf))
+            rownames(dados) <- names(freq_uf)
+            names(dados)    <- paste0("ano",ano_i)
+            dados
+    }) %>%
+        reduce(.f = bind_cols)
 

@@ -23,5 +23,6 @@ build_demographics_age_pnad <- function(Data){
         if(metadata$year == 1976) {
                 warning("PNAD 1976: age is truncated at 99 years")
         }
+
         Data
 }

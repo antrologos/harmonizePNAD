@@ -90,12 +90,12 @@ find_sulfix <- function(Data, general_or_specific){
         sulfix
 }
 
-find_function <- function(Data, var_name){
+find_function <- function(Data, pattern, general_or_specific){
 
         existing_functions <- unclass(lsf.str(envir = asNamespace("harmonizePNAD"), all = T))
-        relevant_functions <- harmonizePNAD:::existing_functions[grep(pattern = var_name, x = existing_functions)]
+        relevant_functions <- existing_functions[grep(pattern = pattern, x = existing_functions)]
 
-        sulfix <- harmonizePNAD:::find_sulfix(Data, general_or_specific = "specific")
+        sulfix <- harmonizePNAD:::find_sulfix(Data, general_or_specific = general_or_specific)
 
         f_parts <- strsplit(relevant_functions, split = "_")[[1]][1:3]
         f_parts <- c(f_parts, sulfix)
@@ -135,31 +135,40 @@ just_created_vars_list = function(){
 }
 
 
-build_onTheFly <- function(Data, var_name){
+
+
+build_onTheFly <- function(Data, var_name, general_or_specific){
 
         if(!is.character(var_name) | length(var_name) != 1){
                 stop("'var_name' must be a one-valued character vector")
         }
 
-        check_var <- harmonizePNAD:::check_var_existence(Data, var_name)
+        harmonizePNAD:::just_created_vars_list()
 
-        metadata  <- harmonizePNAD:::check_prepared_to_harmonize(Data)
+        f    <- harmonizePNAD:::find_function(Data, var_name, general_or_specific)
 
-        just_created_vars_list()
+        call <- paste0(f,"(Data)")
+        Data <- eval(parse(text = call))
+        gc(); Sys.sleep(.5); gc()
 
-        if(length(check_vars) == 1) {
+        just_created_vars <<- c(just_created_vars, var_name)
 
-                f    <- harmonizePNAD:::find_function(Data, var_name)
+        Data
+}
 
-                call <- paste0(f,"(Data)")
-                Data <- eval(parse(text = call))
-                gc(); Sys.sleep(.5); gc()
+check_and_build_onTheFly <- function(Data, var_name, general_or_specific){
 
-                just_created_vars <<- c(just_created_vars, var_name)
+        test <- harmonizePNAD:::check_var_existence(Data = Data, var_names = var_name)
+
+        if(length(test) == 1){
+                Data <- harmonizePNAD:::build_onTheFly(Data = Data,
+                                                       var_name = var_name,
+                                                       general_or_specific = general_or_specific)
         }
 
         Data
 }
+
 
 
 
@@ -170,11 +179,19 @@ erase_just_created_vars <- function(Data){
                         just_created_vars <- just_created_vars[just_created_vars %in% names(Data)]
                         Data[ , c(just_created_vars) := NULL]
                 }
+
+                rm(just_created_vars, envir = .GlobalEnv)
         }
         Data
 }
 
+list_available_harmonizations <- function(x){
+        objects <- ls("package:harmonizePNAD")
+        objects <- objects[grep(x = objects, pattern = x)]
+        objects <- objects[!(objects == paste0("harmonize_",x))]
 
+        objects
+}
 
 
 
