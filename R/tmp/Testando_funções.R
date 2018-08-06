@@ -22,10 +22,10 @@ for(ano_i in anos){
         print(ano_i)
         assign(x = paste0("p_", ano_i),
                value = get(paste0(paste0("p_", ano_i))) %>%
+                       harmonize_identification() %>%
                        harmonize_demographics() %>%
                        harmonize_geography() %>%
-                       build_education_yearsSchooling() %>%
-                       build_identification_wgt()
+                       harmonize_education()
                        )
 }
 
