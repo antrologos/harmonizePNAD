@@ -1,0 +1,11 @@
+---
+title: "harmonizePNAD"
+author: "Rogério Jerônimo Barbosa"
+date: "6 de agosto de 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+

@@ -1,0 +1,14 @@
+Theme;Variable;order
+demographics;age;9
+demographics;gender;10
+demographics;race1980standard;11
+demographics;race2010standard;12
+demographics;raceDummy;13
+education;attainment;8
+education;yearsSchooling;7
+geography;region2010standard;5
+geography;regionMCA;6
+geography;state2010standard;3
+geography;stateMCA;4
+identification;wgt;2
+identification;year;1

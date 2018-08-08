@@ -90,17 +90,70 @@ find_sulfix <- function(Data, general_or_specific){
         sulfix
 }
 
+
+find_sulfixforOccSectors <- function(Data){
+
+        metadata <- harmonizePNAD:::get_metadata(Data)
+
+        if(metadata$type == "census" & metadata$year == 1960){
+                sulfix = "ibge60"
+        }
+
+        if((metadata$type == "census" & metadata$year == 1970)|(metadata$type == "pnad" & metadata$year == 1973)){
+                sulfix = "ibge70"
+        }
+
+        if(metadata$type == "pnad" & metadata$year %in% 1976:1979){
+                sulfix = "pnads76_79"
+        }
+
+        if((metadata$type == "census" & metadata$year == 1980)|(metadata$type == "pnad" & metadata$year %in% 1981:1990)){
+                sulfix = "ibge80"
+        }
+
+        if((metadata$type == "census" & metadata$year == 1991)|(metadata$type == "pnad" & metadata$year %in% 1992:2001)){
+                sulfix = "ibge91"
+        }
+
+        if((metadata$type == "census" & metadata$year == 2000)|(metadata$type == "pnad" & metadata$year %in% 2002:2015)){
+                sulfix = "cboDom"
+        }
+
+        if((metadata$type == "census" & metadata$year == 2010)|(metadata$type == "pnadc")){
+                sulfix = "cod2010"
+        }
+
+
+
+        sulfix
+}
+
+
+
+
+
 find_function <- function(Data, pattern, general_or_specific){
 
         existing_functions <- unclass(lsf.str(envir = asNamespace("harmonizePNAD"), all = T))
         relevant_functions <- existing_functions[grep(pattern = pattern, x = existing_functions)]
 
+        f_parts <- strsplit(relevant_functions, split = "_")
+        f_parts <- f_parts[sapply(f_parts, function(x) length(x) > 3)]
+
+        f_parts <- f_parts[sapply(f_parts, function(x) x[3] == pattern)]
         sulfix <- harmonizePNAD:::find_sulfix(Data, general_or_specific = general_or_specific)
 
-        f_parts <- strsplit(relevant_functions, split = "_")[[1]][1:3]
-        f_parts <- c(f_parts, sulfix)
+        f_parts <- f_parts[sapply(f_parts, function(x) x[4] == sulfix)]
 
-        f <- paste(f_parts, collapse = "_")
+        if(length(f_parts) == 0){
+                stop("The function you looked for does not exist")
+        }
+
+        if(length(f_parts) >= 2){
+                stop("There is more than one function for doing the job you want...")
+        }
+
+        f <- paste(unlist(f_parts), collapse = "_")
 
         f
 }
@@ -171,8 +224,6 @@ check_and_build_onTheFly <- function(Data, var_name, general_or_specific){
 
 
 
-
-
 erase_just_created_vars <- function(Data){
         if(exists("just_created_vars", envir = parent.frame())){
                 if(is.character(just_created_vars)){
@@ -185,6 +236,7 @@ erase_just_created_vars <- function(Data){
         Data
 }
 
+
 list_available_harmonizations <- function(x){
         objects <- ls("package:harmonizePNAD")
         objects <- objects[grep(x = objects, pattern = x)]
@@ -192,9 +244,3 @@ list_available_harmonizations <- function(x){
 
         objects
 }
-
-
-
-
-
-

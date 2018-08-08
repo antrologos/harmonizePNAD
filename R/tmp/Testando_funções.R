@@ -29,6 +29,7 @@ for(ano_i in anos){
                        )
 }
 
+
 # Estatísticas
 map_df(.x = anos,
        .f = function(ano_i){
@@ -55,3 +56,8 @@ map(.x = anos,
     }) %>%
         reduce(.f = bind_cols)
 
+
+vars_to_harmonize_ordered_list <- vars_to_harmonize()
+write.csv2(vars_to_harmonize_ordered_list,
+           file = "C:/Users/Rogerio/Google Drive/RCodes/PacotesR/harmonizePNAD/inst/extdata/vars_to_harmonize_ordered_list.csv",
+           row.names = F)
