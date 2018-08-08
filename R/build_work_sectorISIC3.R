@@ -7,14 +7,14 @@ build_work_sectorISIC3 <- function(Data){
         sulfix   <- harmonizePNAD:::find_sulfixforOccSectors(Data)
 
         crosswalk_location <- system.file("extdata",
-                                     "crosswalk_sector_isic3.xlsx",
+                                     "crosswalk_sector_isic3.csv",
                                      package = "harmonizePNAD")
 
         varList_location <- system.file("extdata",
                                           "varList_sector.csv",
                                           package = "harmonizePNAD")
 
-        crosswalk <- readxl::read_excel(crosswalk_location) %>%
+        crosswalk <- read.csv2(crosswalk_location, stringsAsFactors = F) %>%
                 filter(classification == sulfix) %>%
                 select(sector_code, sectorISIC3) %>%
                 as.data.table()
