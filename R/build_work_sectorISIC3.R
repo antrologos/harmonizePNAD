@@ -33,7 +33,11 @@ build_work_sectorISIC3 <- function(Data){
 
         Data[ , sector_code := Data[[varName]] ]
 
-        Data = crosswalk[Data, on = "sector_code"]
+        # efficient join using data.table sintax:
+        Data = crosswalk[Data, on = "sector_code"] # this causes loss of the metadata
+
+        Data = harmonizePNAD:::re_prepare_to_harmonize(Data, metadata) #recovering metadata...
+
         gc(); Sys.sleep(.3);gc()
 
         Data <- Data %>%

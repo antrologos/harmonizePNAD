@@ -244,3 +244,28 @@ list_available_harmonizations <- function(x){
 
         objects
 }
+
+
+
+re_prepare_to_harmonize <- function(Data, metadata){
+
+        attr(Data, which = "type") <- metadata$type
+        attr(Data, which = "year") <- metadata$year
+
+        if(metadata$type == "pnadc"){
+                attr(Data, which = "pnadc_freq") <- metadata$pnadc_freq
+
+                if(pnadc_freq == "quarterly") {
+                        attr(Data, which = "quarter") <- metadata$quarter
+                }
+        }
+
+        if(metadata$type == "census" & metadata$year == 1970){
+                attr(Data, which = "state_var_name") <- metadata$state_var_name
+        }
+
+        attr(Data, which = "readyToHarmonize") <- TRUE
+
+        Data
+}
+

@@ -53,6 +53,7 @@ prepare_to_harmonize <- function(Data,
                 if((length(year) != 1) | !(year %in% time_frame)){
                         stop(paste("'year' must be one of the following:", paste(time_frame, collapse = ", ")))
                 }
+
         }
 
         # Cheking if it is a data.frame and converting to data.table
@@ -78,19 +79,21 @@ prepare_to_harmonize <- function(Data,
         if(type == "census" & year == 1970){
 
                 if(is.null(state_var_name)){
-                        stop("\n1970 Census: For the year 1970, you have to specify 'state_var_name'. The original\ndatabase produced by IBGE do not contains an state variable. So each user may have\ncreated a different name for it. This function will rename it to 'uf'.")
+                        warning("\n1970 Census: For the year 1970, you have to specify 'state_var_name'. The original\ndatabase produced by IBGE do not contains an state variable. So each user may have\ncreated a different name for it. If you do not want to use this variable, inform 'none'")
                 }else{
 
                         # Converting to data.table
-                        if((length(state_var_name) != 1) | !is.character(state_var_name)){
-                                stop("\n'state_var_name' must be a single-valued character vector informing the name of the\nvariable representing the Brazilian states in the 1970 Census.")
+                        if((length(state_var_name) != 1) | !is.character(state_var_name) | is.na(state_var_name)){
+                                stop("\n'state_var_name' must be a single-valued character vector informing the name of the\nvariable representing the Brazilian states in the 1970 Census (or simply 'none').")
                         }
 
-                        setnames(Data, old = state_var_name, new = "uf")
-                        warning("1970 Census: The variable for states was renamed to 'uf'.")
+                        if(!(state_var_name == 'none')){
+                                attr(Data, which = "state_var_name") <- state_var_name
+                        }else{
+                                attr(Data, which = "state_var_name") <- NA
+                        }
                 }
         }
-
 
         attr(Data, which = "readyToHarmonize") <- TRUE
 

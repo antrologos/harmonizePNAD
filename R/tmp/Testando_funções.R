@@ -17,7 +17,39 @@ for(ano_i in anos){
                value = fread(arquivo) %>% prepare_to_harmonize(type = "pnad", year = ano_i))
 }
 
-# Harmonizacoes
+# Harmonizacoes - testes de variaveis especificas
+for(ano_i in anos){
+        print(ano_i)
+        assign(x = paste0("p_", ano_i),
+               value = get(paste0(paste0("p_", ano_i))) %>%
+                       build_identification_wgt(typeOfweight = "fweight") %>%
+                       build_identification_year() %>%
+                       build_geography_stateMCA()
+        )
+}
+
+dados_existentes <- ls()[grep(x = ls(), pattern="p_[[:digit:]]{4}")]
+dados_stack = data_frame()
+for(dado_i in dados_existentes){
+        print(dado_i)
+        dados_stack <- bind_rows(dados_stack,
+                                 get(dado_i) %>% select(year, stateMCA, fweight) %>% filter(complete.cases(.)))
+}
+dados_stack <- data.table(dados_stack)
+
+freq = dados_stack[ , questionr::wtd.table(x = stateMCA,
+                                           y = year,
+                                           weights = fweight)]
+round(freq*100, 3)
+
+
+
+
+
+
+
+
+# Harmonizacoes completas
 for(ano_i in anos){
         print(ano_i)
         assign(x = paste0("p_", ano_i),
