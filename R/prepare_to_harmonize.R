@@ -59,7 +59,7 @@ prepare_to_harmonize <- function(Data,
         }
 
         # Cheking if it is a data.frame and converting to data.table
-        Data <- check_Data_frame_convert_to_data_table(Data)
+        Data <- harmonizePNAD:::check_Data_frame_convert_to_data_table(Data)
 
         attr(Data, which = "readyToHarmonize") <- FALSE
 
@@ -77,11 +77,6 @@ prepare_to_harmonize <- function(Data,
         # Variable names to lower case
 
         varNames <- names(Data)
-        varNames[13] = "var0157"
-        varNames[14] = "Var0158"
-        varNames[15] = "VAR0159"
-
-
         to_remove_VAR <- varNames[grep(x = varNames, pattern = "^var[[:digit:]]{4,6}", ignore.case = T)]
         VAR_removed   <- gsub(x = to_remove_VAR, pattern = "^var", replacement = "v", ignore.case = T)
         setnames(x = Data, old = to_remove_VAR, new = VAR_removed)

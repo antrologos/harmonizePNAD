@@ -143,8 +143,10 @@ find_function <- function(Data, pattern, general_or_specific){
         f_parts <- f_parts[sapply(f_parts, function(x) x[3] == pattern)]
 
         if(!is.na(general_or_specific)){
-                sulfix <- harmonizePNAD:::find_sulfix(Data, general_or_specific = general_or_specific)
+                sulfix  <- harmonizePNAD:::find_sulfix(Data, general_or_specific = general_or_specific)
                 f_parts <- f_parts[sapply(f_parts, function(x) x[4] == sulfix)]
+                f_parts <- f_parts[!sapply(f_parts, is.null)]
+
         }
 
         if(length(f_parts) == 0){

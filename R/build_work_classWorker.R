@@ -20,6 +20,7 @@ build_work_classWorker <- function(Data){
         Data[sectorISIC3 == 10 & classWorker == 5, classWorker := 4] # unpaid
 
         Data <- harmonizePNAD:::erase_just_created_vars(Data)
+        gc()
 
         Data
 

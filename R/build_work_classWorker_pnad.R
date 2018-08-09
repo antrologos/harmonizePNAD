@@ -19,12 +19,12 @@ build_work_classWorker_pnad <- function(Data){
         expr_employee   <- with(crosswalk_i, paste(var_classWorker,"%in% c(",classWorker_employee, ")"))
         expr_employer   <- with(crosswalk_i, paste(var_classWorker,"%in% c(",classWorker_employer, ")"))
         expr_selfEmpl   <- with(crosswalk_i, paste(var_classWorker,"%in% c(",classWorker_selfEmpl, ")"))
-        expr_unpaid     <- with(crosswalk_i, paste(var_classWorker,"%in% c(",classWorker_employer, ")"))
+        expr_unpaid     <- with(crosswalk_i, paste(var_classWorker,"%in% c(",classWorker_unpaid, ")"))
 
-        Data[eval(parse(text = expr_employee)),    var_classWorker := 1]
-        Data[eval(parse(text = expr_employer)),    var_classWorker := 2]
-        Data[eval(parse(text = expr_selfEmpl)),    var_classWorker := 3]
-        Data[eval(parse(text = expr_unpaid)),      var_classWorker := 5]
+        Data[eval(parse(text = expr_employee)),    classWorker := 1]
+        Data[eval(parse(text = expr_employer)),    classWorker := 2]
+        Data[eval(parse(text = expr_selfEmpl)),    classWorker := 3]
+        Data[eval(parse(text = expr_unpaid)),      classWorker := 5]
 
         gc()
 

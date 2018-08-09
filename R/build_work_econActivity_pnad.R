@@ -1,5 +1,5 @@
 
-build_work_econActivity_pnad <- function(x){
+build_work_econActivity_pnad <- function(Data){
 
         # Loading the crosswalk
         file_location <- system.file("extdata",
