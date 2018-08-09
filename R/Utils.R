@@ -138,12 +138,14 @@ find_function <- function(Data, pattern, general_or_specific){
         relevant_functions <- existing_functions[grep(pattern = pattern, x = existing_functions)]
 
         f_parts <- strsplit(relevant_functions, split = "_")
-        f_parts <- f_parts[sapply(f_parts, function(x) length(x) > 3)]
+        f_parts <- f_parts[sapply(f_parts, function(x) length(x) >= 3)]
 
         f_parts <- f_parts[sapply(f_parts, function(x) x[3] == pattern)]
-        sulfix <- harmonizePNAD:::find_sulfix(Data, general_or_specific = general_or_specific)
 
-        f_parts <- f_parts[sapply(f_parts, function(x) x[4] == sulfix)]
+        if(!is.na(general_or_specific)){
+                sulfix <- harmonizePNAD:::find_sulfix(Data, general_or_specific = general_or_specific)
+                f_parts <- f_parts[sapply(f_parts, function(x) x[4] == sulfix)]
+        }
 
         if(length(f_parts) == 0){
                 stop("The function you looked for does not exist")
@@ -247,7 +249,7 @@ list_available_harmonizations <- function(x){
 
 
 
-re_prepare_to_harmonize <- function(Data, metadata){
+set_metadata <- function(Data, metadata){
 
         attr(Data, which = "type") <- metadata$type
         attr(Data, which = "year") <- metadata$year

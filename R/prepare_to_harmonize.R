@@ -2,6 +2,8 @@
 #' @param Data
 #' @param type
 #' @param year
+#' @param pnadc_freq
+#' @param quarter
 #' @param state_var_name
 #' @value data.frame
 #' @export
@@ -73,8 +75,43 @@ prepare_to_harmonize <- function(Data,
         }
 
         # Variable names to lower case
-        setnames(x = Data, old = names(Data), new = tolower(names(Data)))
-        warning("All variable names were set to lowercase")
+
+        varNames <- names(Data)
+        varNames[13] = "var0157"
+        varNames[14] = "Var0158"
+        varNames[15] = "VAR0159"
+
+
+        to_remove_VAR <- varNames[grep(x = varNames, pattern = "^var[[:digit:]]{4,6}", ignore.case = T)]
+        VAR_removed   <- gsub(x = to_remove_VAR, pattern = "^var", replacement = "v", ignore.case = T)
+        setnames(x = Data, old = to_remove_VAR, new = VAR_removed)
+
+        var_tolower <- names(Data)
+        var_tolower <- var_tolower[grep(x = var_tolower, pattern = "[Vv][Dd]?[[:digit:]]{4,6}")]
+        setnames(x = Data, old = var_tolower, new = tolower(var_tolower))
+
+        var_tolower2 <- names(Data)
+        var_tolower2 <- var_tolower2[grep(x = var_tolower2, pattern = "[P][p]?[[:digit:]]{4,6}")]
+        setnames(x = Data, old = var_tolower2, new = tolower(var_tolower2))
+
+        vars_to_fill <- names(Data)
+        vars_to_fill <- vars_to_fill[grep(x = vars_to_fill, pattern = "[vp][d]?[[:digit:]]{4,6}")]
+
+        list_digits <- stringr::str_locate_all(vars_to_fill, "[[:digit:]]")
+        place_to_split <- as.numeric(sapply(list_digits, function(x) x[1,1]))
+
+        var_start <- str_sub(vars_to_fill, start = 1, end = (place_to_split-1))
+        var_end   <- str_sub(vars_to_fill, start = place_to_split, end = nchar(vars_to_fill))
+
+        var_end[nchar(var_end) == 1] = paste("000", var_end[nchar(var_end) == 1])
+        var_end[nchar(var_end) == 2] = paste("00",  var_end[nchar(var_end) == 2])
+        var_end[nchar(var_end) == 3] = paste("0",   var_end[nchar(var_end) == 3])
+
+        vars_filled <- paste0(var_start, var_end)
+
+        setnames(x = Data, old = vars_to_fill, new = vars_filled)
+
+
 
         if(type == "census" & year == 1970){
 

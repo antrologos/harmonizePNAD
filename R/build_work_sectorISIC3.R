@@ -31,12 +31,14 @@ build_work_sectorISIC3 <- function(Data){
                         .$var_sector
         }
 
+        harmonizePNAD:::check_necessary_vars(Data, varName)
+
         Data[ , sector_code := Data[[varName]] ]
 
         # efficient join using data.table sintax:
         Data = crosswalk[Data, on = "sector_code"] # this causes loss of the metadata
 
-        Data = harmonizePNAD:::re_prepare_to_harmonize(Data, metadata) #recovering metadata...
+        Data = harmonizePNAD:::set_metadata(Data, metadata) #recovering metadata...
 
         gc(); Sys.sleep(.3);gc()
 
