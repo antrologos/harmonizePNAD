@@ -46,6 +46,18 @@ build_work_sectorISIC3 <- function(Data){
                 select(-sectorISIC3, everything(), sectorISIC3, -sector_code)
 
         Data[sectorISIC3 == 0, sectorISIC3 := NA]
+
+        Data <- harmonizePNAD:::check_and_build_onTheFly(Data,
+                                                         var_name = "occupationalStatus",
+                                                         general_or_specific = "general")
+        Data <- harmonizePNAD:::check_and_build_onTheFly(Data,
+                                                         var_name = "econActivity",
+                                                         general_or_specific = "general")
+
+        Data[is.na(occupationalStatus) | occupationalStatus == 0, sectorISIC3 := NA]
+        Data[is.na(econActivity)       | econActivity == 0      , sectorISIC3 := NA]
+        Data <- harmonizePNAD:::erase_just_created_vars(Data)
+
         gc()
 
         Data

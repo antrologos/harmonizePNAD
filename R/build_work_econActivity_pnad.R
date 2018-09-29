@@ -23,6 +23,16 @@ build_work_econActivity_pnad <- function(Data){
         Data[eval(parse(text = expr_active)),    econActivity := 1]
         Data[eval(parse(text = expr_inactive)),  econActivity := 0]
 
+        if(metadata$year %in% c(1976,2001)){
+                Data <- harmonizePNAD:::check_and_build_onTheFly(Data,
+                                                                 var_name = "age",
+                                                                 general_or_specific = "general")
+
+
+                Data[age < 10, econActivity := NA]
+                Data <- harmonizePNAD:::erase_just_created_vars(Data)
+        }
+
         gc()
 
         Data

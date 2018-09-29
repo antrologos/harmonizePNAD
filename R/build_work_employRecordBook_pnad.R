@@ -34,8 +34,8 @@ build_work_employRecordBook_pnad <- function(Data){
                                                                  var_name = "econActivity",
                                                                  general_or_specific = "general")
 
-                Data[occupationalStatus == 0, employRecordBook := NA]
-                Data[econActivity == 0      , employRecordBook := NA]
+                Data[is.na(occupationalStatus) | occupationalStatus == 0, employRecordBook := NA]
+                Data[is.na(econActivity)       | econActivity == 0      , employRecordBook := NA]
                 Data <- harmonizePNAD:::erase_just_created_vars(Data)
         }
 

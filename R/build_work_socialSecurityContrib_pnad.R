@@ -32,8 +32,8 @@ build_work_socialSecurityContrib_pnad <- function(Data){
                                                                  var_name = "econActivity",
                                                                  general_or_specific = "general")
 
-                Data[occupationalStatus == 0, socialSecurityContrib := NA]
-                Data[econActivity == 0      , socialSecurityContrib := NA]
+                Data[is.na(occupationalStatus) | occupationalStatus == 0, socialSecurityContrib := NA]
+                Data[is.na(econActivity)       | econActivity == 0      , socialSecurityContrib := NA]
                 Data <- harmonizePNAD:::erase_just_created_vars(Data)
         }
 

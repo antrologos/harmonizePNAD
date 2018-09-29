@@ -26,6 +26,18 @@ build_work_classWorker_pnad <- function(Data){
         Data[eval(parse(text = expr_selfEmpl)),    classWorker := 3]
         Data[eval(parse(text = expr_unpaid)),      classWorker := 5]
 
+        Data <- harmonizePNAD:::check_and_build_onTheFly(Data,
+                                                         var_name = "occupationalStatus",
+                                                         general_or_specific = "general")
+        Data <- harmonizePNAD:::check_and_build_onTheFly(Data,
+                                                         var_name = "econActivity",
+                                                         general_or_specific = "general")
+
+        Data[is.na(occupationalStatus) | occupationalStatus == 0, classWorker := NA]
+        Data[is.na(econActivity)       | econActivity == 0      , classWorker := NA]
+        Data <- harmonizePNAD:::erase_just_created_vars(Data)
+
+
         gc()
 
         Data

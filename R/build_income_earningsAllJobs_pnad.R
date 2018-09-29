@@ -75,6 +75,15 @@ build_income_earningsAllJobs_pnad <- function(Data){
                 Data <- harmonizePNAD:::erase_just_created_vars(Data)
         }
 
+        if(metadata$year %in% c(1976,1992:1995,2001)){
+                Data <- harmonizePNAD:::check_and_build_onTheFly(Data,
+                                                                 var_name = "age",
+                                                                 general_or_specific = "general")
+
+
+                Data[age < 10, earningsAllJobs := NA]
+                Data <- harmonizePNAD:::erase_just_created_vars(Data)
+        }
 
         Data[earningsAllJobs >= crosswalk$missing_values, earningsAllJobs := NA]
 
