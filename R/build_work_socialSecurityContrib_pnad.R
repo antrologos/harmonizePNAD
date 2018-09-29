@@ -23,6 +23,20 @@ build_work_socialSecurityContrib_pnad <- function(Data){
         Data[eval(parse(text = expr_contrib)),   socialSecurityContrib := 1]
         Data[eval(parse(text = expr_notContr)),  socialSecurityContrib := 0]
 
+        if(metadata$year == 1976){
+                Data <- harmonizePNAD:::check_and_build_onTheFly(Data,
+                                                                 var_name = "occupationalStatus",
+                                                                 general_or_specific = "general")
+
+                Data <- harmonizePNAD:::check_and_build_onTheFly(Data,
+                                                                 var_name = "econActivity",
+                                                                 general_or_specific = "general")
+
+                Data[occupationalStatus == 0, socialSecurityContrib := NA]
+                Data[econActivity == 0      , socialSecurityContrib := NA]
+                Data <- harmonizePNAD:::erase_just_created_vars(Data)
+        }
+
         gc()
 
         Data

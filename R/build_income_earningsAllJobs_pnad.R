@@ -1,5 +1,4 @@
 
-
 build_income_earningsAllJobs_pnad <- function(Data){
 
         metadata = harmonizePNAD:::get_metadata(Data)
@@ -59,6 +58,23 @@ build_income_earningsAllJobs_pnad <- function(Data){
                 Data[occupationalStatus == 1 & is.na(earningsAllJobs), earningsAllJobs := 0]
                 Data <- harmonizePNAD:::erase_just_created_vars(Data)
         }
+
+
+        if(metadata$year %in% 1992:2001){
+                Data <- harmonizePNAD:::check_and_build_onTheFly(Data,
+                                                                 var_name = "occupationalStatus",
+                                                                 general_or_specific = "general")
+
+                Data <- harmonizePNAD:::check_and_build_onTheFly(Data,
+                                                                 var_name = "econActivity",
+                                                                 general_or_specific = "general")
+
+                Data[occupationalStatus == 0, earningsAllJobs := NA]
+                Data[econActivity == 0      , earningsAllJobs := NA]
+
+                Data <- harmonizePNAD:::erase_just_created_vars(Data)
+        }
+
 
         Data[earningsAllJobs >= crosswalk$missing_values, earningsAllJobs := NA]
 
