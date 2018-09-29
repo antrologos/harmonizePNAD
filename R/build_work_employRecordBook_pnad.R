@@ -25,19 +25,19 @@ build_work_employRecordBook_pnad <- function(Data){
         Data[eval(parse(text = expr_no)),  employRecordBook := 0]
         Data[eval(parse(text = expr_publicServant_Military)),  employRecordBook := 2]
 
-        if(metadata$year == 1976){
-                Data <- harmonizePNAD:::check_and_build_onTheFly(Data,
-                                                                 var_name = "occupationalStatus",
-                                                                 general_or_specific = "general")
 
-                Data <- harmonizePNAD:::check_and_build_onTheFly(Data,
-                                                                 var_name = "econActivity",
-                                                                 general_or_specific = "general")
+        Data <- harmonizePNAD:::check_and_build_onTheFly(Data,
+                                                         var_name = "occupationalStatus",
+                                                         general_or_specific = "general")
 
-                Data[is.na(occupationalStatus) | occupationalStatus == 0, employRecordBook := NA]
-                Data[is.na(econActivity)       | econActivity == 0      , employRecordBook := NA]
-                Data <- harmonizePNAD:::erase_just_created_vars(Data)
-        }
+        Data <- harmonizePNAD:::check_and_build_onTheFly(Data,
+                                                         var_name = "econActivity",
+                                                         general_or_specific = "general")
+
+        Data[is.na(occupationalStatus) | occupationalStatus == 0, employRecordBook := NA]
+        Data[is.na(econActivity)       | econActivity == 0      , employRecordBook := NA]
+        Data <- harmonizePNAD:::erase_just_created_vars(Data)
+
 
         gc()
 
