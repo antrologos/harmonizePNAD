@@ -5,8 +5,9 @@
 
 build_work_classWorker <- function(Data){
 
-        Data <- harmonizePNAD:::check_prepared_to_harmonize(Data)
+        just_created_vars_list_existedBefore <- exists(x = "just_created_vars", where = .GlobalEnv)
 
+        Data <- harmonizePNAD:::check_prepared_to_harmonize(Data)
         Data <- harmonizePNAD:::check_and_build_onTheFly(Data, "sectorISIC3", general_or_specific = NA)
 
         sulfix <- harmonizePNAD:::find_sulfix(Data, general_or_specific = "general")
@@ -19,7 +20,10 @@ build_work_classWorker <- function(Data){
         Data[sectorISIC3 == 10 & classWorker == 3, classWorker := 4] # self-employed
         Data[sectorISIC3 == 10 & classWorker == 5, classWorker := 4] # unpaid
 
-        Data <- harmonizePNAD:::erase_just_created_vars(Data)
+        if(just_created_vars_list_existedBefore == F){
+                Data <- harmonizePNAD:::erase_just_created_vars(Data)
+        }
+
         gc()
 
         Data

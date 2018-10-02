@@ -1,6 +1,8 @@
 
 build_education_attainment1973standard_pnad <- function(Data){
 
+        just_created_vars_list_existedBefore <- exists(x = "just_created_vars", where = .GlobalEnv)
+
         sulfix <- harmonizePNAD:::find_sulfix(Data, general_or_specific = "specific")
 
         if(sulfix == "pnad1973"){
@@ -27,7 +29,9 @@ build_education_attainment1973standard_pnad <- function(Data){
                 Data[  , attainment1973standard := attainment]
                 Data[attainment == 2 , attainment1973standard := 1]
 
-                Data <- harmonizePNAD:::erase_just_created_vars(Data)
+                if(just_created_vars_list_existedBefore == F){
+                        Data <- harmonizePNAD:::erase_just_created_vars(Data)
+                }
         }
 
 

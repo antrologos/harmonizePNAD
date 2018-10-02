@@ -5,6 +5,8 @@
 
 build_geography_region2010standard <- function(Data){
 
+        just_created_vars_list_existedBefore <- exists(x = "just_created_vars", where = .GlobalEnv)
+
         Data <- harmonizePNAD:::check_prepared_to_harmonize(Data)
 
         metadata = harmonizePNAD:::get_metadata(Data)
@@ -24,7 +26,10 @@ build_geography_region2010standard <- function(Data){
 
         Data[, region2010standard := trunc(state2010standard/10)]
 
-        Data <- harmonizePNAD:::erase_just_created_vars(Data)
+        if(just_created_vars_list_existedBefore == F){
+                Data <- harmonizePNAD:::erase_just_created_vars(Data)
+        }
+
 
         Data
 }

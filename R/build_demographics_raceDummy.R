@@ -5,6 +5,8 @@
 
 build_demographics_raceDummy <- function(Data){
 
+        just_created_vars_list_existedBefore <- exists(x = "just_created_vars", where = .GlobalEnv)
+
         Data <- harmonizePNAD:::check_prepared_to_harmonize(Data)
 
         metadata = harmonizePNAD:::get_metadata(Data)
@@ -25,7 +27,9 @@ build_demographics_raceDummy <- function(Data){
         Data[race1980standard %in% c(2, 6), raceDummy := 1]
         Data[race1980standard %in% c(4, 8), raceDummy := 0]
 
-        Data <- harmonizePNAD:::erase_just_created_vars(Data)
+        if(just_created_vars_list_existedBefore == F){
+                Data <- harmonizePNAD:::erase_just_created_vars(Data)
+        }
         gc(); Sys.sleep(.3); gc()
 
         Data

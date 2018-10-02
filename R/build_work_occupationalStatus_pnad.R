@@ -1,6 +1,8 @@
 
 build_work_occupationalStatus_pnad <- function(Data){
 
+        just_created_vars_list_existedBefore <- exists(x = "just_created_vars", where = .GlobalEnv)
+
         # Loading the crosswalk
         file_location <- system.file("extdata",
                                      "crosswalk_pnad_occupationalStatus.csv",
@@ -33,7 +35,10 @@ build_work_occupationalStatus_pnad <- function(Data){
 
         Data[age < 10,                                occupationalStatus := NA]
         Data[is.na(econActivity) | econActivity == 0, occupationalStatus := NA]
-        Data <- harmonizePNAD:::erase_just_created_vars(Data)
+
+        if(just_created_vars_list_existedBefore == F){
+                Data <- harmonizePNAD:::erase_just_created_vars(Data)
+        }
 
         gc()
 

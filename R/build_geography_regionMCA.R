@@ -5,6 +5,8 @@
 
 build_geography_regionMCA <- function(Data){
 
+        just_created_vars_list_existedBefore <- exists(x = "just_created_vars", where = .GlobalEnv)
+
         Data <- harmonizePNAD:::check_prepared_to_harmonize(Data)
 
         Data <- harmonizePNAD:::check_and_build_onTheFly(Data,
@@ -14,7 +16,10 @@ build_geography_regionMCA <- function(Data){
         Data[ , regionMCA := trunc(stateMCA/10)]
         gc(); Sys.sleep(.3); gc()
 
-        Data <- harmonizePNAD:::erase_just_created_vars(Data)
+        if(just_created_vars_list_existedBefore == F){
+                Data <- harmonizePNAD:::erase_just_created_vars(Data)
+        }
+
         Data
 }
 

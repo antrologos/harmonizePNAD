@@ -2,6 +2,8 @@
 
 build_income_earningsMainJob_pnad <- function(Data){
 
+        just_created_vars_list_existedBefore <- exists(x = "just_created_vars", where = .GlobalEnv)
+
         metadata = harmonizePNAD:::get_metadata(Data)
 
         # Loading the crosswalk
@@ -22,7 +24,6 @@ build_income_earningsMainJob_pnad <- function(Data){
                                                                  general_or_specific = "general")
 
                 Data[occupationalStatus == 1 & is.na(earningsMainJob), earningsMainJob := 0]
-                Data <- harmonizePNAD:::erase_just_created_vars(Data)
         }
 
         Data <- harmonizePNAD:::check_and_build_onTheFly(Data,
@@ -36,11 +37,11 @@ build_income_earningsMainJob_pnad <- function(Data){
         Data[is.na(occupationalStatus) | occupationalStatus == 0, earningsMainJob := NA]
         Data[is.na(econActivity)       | econActivity == 0      , earningsMainJob := NA]
 
-        Data <- harmonizePNAD:::erase_just_created_vars(Data)
+        if(just_created_vars_list_existedBefore == F){
+                Data <- harmonizePNAD:::erase_just_created_vars(Data)
+        }
 
         Data[earningsMainJob >= crosswalk$missing_values, earningsMainJob := NA]
-
-
 
         Data
 }

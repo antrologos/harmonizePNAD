@@ -6,6 +6,8 @@ build_work_sectorISIC3 <- function(Data){
         metadata <- harmonizePNAD:::get_metadata(Data)
         sulfix   <- harmonizePNAD:::find_sulfixforOccSectors(Data)
 
+        just_created_vars_list_existedBefore <- exists(x = "just_created_vars", where = .GlobalEnv)
+
         crosswalk_location <- system.file("extdata",
                                      "crosswalk_sector_isic3.csv",
                                      package = "harmonizePNAD")
@@ -56,7 +58,10 @@ build_work_sectorISIC3 <- function(Data){
 
         Data[is.na(occupationalStatus) | occupationalStatus == 0, sectorISIC3 := NA]
         Data[is.na(econActivity)       | econActivity == 0      , sectorISIC3 := NA]
-        Data <- harmonizePNAD:::erase_just_created_vars(Data)
+
+        if(just_created_vars_list_existedBefore == F){
+                Data <- harmonizePNAD:::erase_just_created_vars(Data)
+        }
 
         gc()
 
