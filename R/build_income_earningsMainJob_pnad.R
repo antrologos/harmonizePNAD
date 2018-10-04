@@ -49,7 +49,7 @@ build_income_earningsMainJob_pnad <- function(Data){
                 Data <- harmonizePNAD:::erase_just_created_vars(Data)
 
         }else{
-                harmonizePNAD:::check_necessary_vars(Data = Data, var_names = earnings_vars)
+                harmonizePNAD:::check_necessary_vars(Data = Data, var_names = crosswalk$var_earningsMainJob)
                 Data$earningsMainJob = Data[[crosswalk$var_earningsMainJob]]
         }
 
