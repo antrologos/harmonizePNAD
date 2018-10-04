@@ -59,6 +59,8 @@ build_work_sectorISIC3 <- function(Data){
         Data[is.na(occupationalStatus) | occupationalStatus == 0, sectorISIC3 := NA]
         Data[is.na(econActivity)       | econActivity == 0      , sectorISIC3 := NA]
 
+        Data[ occupationalStatus == 1 & is.na(sectorISIC3), sectorISIC3 := 999]
+
         if(just_created_vars_list_existedBefore == F){
                 Data <- harmonizePNAD:::erase_just_created_vars(Data)
         }
