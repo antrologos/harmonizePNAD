@@ -14,4 +14,4 @@ Depends:
 License: GPL-3
 URL: https://github.com/antrologos/harmonizePNAD
 BugReports: https://github.com/antrologos/harmonizePNAD/issues
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1

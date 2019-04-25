@@ -12,14 +12,18 @@ build_income_earningsAllJobs_pnad <- function(Data){
         crosswalk <- data.table::fread(file_location, colClasses = "numeric", dec =",")
         crosswalk <- crosswalk[year == metadata$year]
 
+        Data <- harmonizePNAD:::check_and_build_onTheFly(Data,
+                                                         var_name = "occupationalStatus",
+                                                         general_or_specific = "general")
+
+        Data <- harmonizePNAD:::check_and_build_onTheFly(Data,
+                                                         var_name = "econActivity",
+                                                         general_or_specific = "general")
+
         if(metadata$year == 1978){
 
                 earnings_vars <- str_split(crosswalk$var_earningsAllJobs,pattern = ";") %>% unlist()
                 harmonizePNAD:::check_necessary_vars(Data = Data, var_names = earnings_vars)
-
-                Data <- harmonizePNAD:::check_and_build_onTheFly(Data,
-                                                                 var_name = "occupationalStatus",
-                                                                 general_or_specific = "general")
 
                 earnings_matrix <- as.matrix(Data[ , earnings_vars, with = F])
 
@@ -44,8 +48,6 @@ build_income_earningsAllJobs_pnad <- function(Data){
                 Data[earningsAllJobs == 0, earningsAllJobs := NA]
                 Data[ zero_incomes, earningsAllJobs := 0]
 
-                Data <- harmonizePNAD:::erase_just_created_vars(Data)
-
         }else{
 
                 Data$earningsAllJobs = Data[[crosswalk$var_earningsAllJobs]]
@@ -53,20 +55,8 @@ build_income_earningsAllJobs_pnad <- function(Data){
 
 
         if(metadata$year %in% c(1976,1977,1979:1990)){
-                Data <- harmonizePNAD:::check_and_build_onTheFly(Data,
-                                                                 var_name = "occupationalStatus",
-                                                                 general_or_specific = "general")
-
                 Data[occupationalStatus == 1 & is.na(earningsAllJobs), earningsAllJobs := 0]
         }
-
-        Data <- harmonizePNAD:::check_and_build_onTheFly(Data,
-                                                         var_name = "occupationalStatus",
-                                                         general_or_specific = "general")
-
-        Data <- harmonizePNAD:::check_and_build_onTheFly(Data,
-                                                         var_name = "econActivity",
-                                                         general_or_specific = "general")
 
         Data[is.na(occupationalStatus) | occupationalStatus == 0, earningsAllJobs := NA]
         Data[is.na(econActivity)       | econActivity == 0      , earningsAllJobs := NA]

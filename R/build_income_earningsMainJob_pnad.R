@@ -12,16 +12,20 @@ build_income_earningsMainJob_pnad <- function(Data){
                                      package = "harmonizePNAD")
 
         crosswalk <- data.table::fread(file_location, colClasses = "numeric", dec =",")
-        crosswalk <- crosswalk[year == metadata$year]
+        crosswalk_i <- crosswalk[year == metadata$year]
+
+        Data <- harmonizePNAD:::check_and_build_onTheFly(Data,
+                                                         var_name = "econActivity",
+                                                         general_or_specific = "general")
+
+        Data <- harmonizePNAD:::check_and_build_onTheFly(Data,
+                                                         var_name = "occupationalStatus",
+                                                         general_or_specific = "general")
 
         if(metadata$year == 1978){
 
-                earnings_vars <- str_split(crosswalk$var_earningsMainJob,pattern = ";") %>% unlist()
+                earnings_vars <- str_split(crosswalk_i$var_earningsMainJob,pattern = ";") %>% unlist()
                 harmonizePNAD:::check_necessary_vars(Data = Data, var_names = earnings_vars)
-
-                Data <- harmonizePNAD:::check_and_build_onTheFly(Data,
-                                                                 var_name = "occupationalStatus",
-                                                                 general_or_specific = "general")
 
                 earnings_matrix <- as.matrix(Data[ , earnings_vars, with = F])
 
@@ -32,7 +36,7 @@ build_income_earningsMainJob_pnad <- function(Data){
 
                 location_missings <- NULL
                 for(j in 1:ncol(earnings_matrix)){
-                        location_missings_j <- which(earnings_matrix[,j] >= crosswalk$missing_values)
+                        location_missings_j <- which(earnings_matrix[,j] >= crosswalk_i$missing_values)
                         if(length(location_missings_j) > 0){
                                 location_missings <- rbind(location_missings,
                                                            cbind(location_missings_j,j)
@@ -46,20 +50,11 @@ build_income_earningsMainJob_pnad <- function(Data){
                 Data[earningsMainJob == 0, earningsMainJob := NA]
                 Data[ zero_incomes, earningsMainJob := 0]
 
-                Data <- harmonizePNAD:::erase_just_created_vars(Data)
-
         }else{
-                harmonizePNAD:::check_necessary_vars(Data = Data, var_names = crosswalk$var_earningsMainJob)
-                Data$earningsMainJob = Data[[crosswalk$var_earningsMainJob]]
+                harmonizePNAD:::check_necessary_vars(Data = Data, var_names = crosswalk_i$var_earningsMainJob)
+                Data$earningsMainJob = Data[[crosswalk_i$var_earningsMainJob]]
         }
 
-        Data <- harmonizePNAD:::check_and_build_onTheFly(Data,
-                                                         var_name = "occupationalStatus",
-                                                         general_or_specific = "general")
-
-        Data <- harmonizePNAD:::check_and_build_onTheFly(Data,
-                                                         var_name = "econActivity",
-                                                         general_or_specific = "general")
 
         if(metadata$year %in% c(1976, 1977, 1979, 1981:1990)){
                 Data[occupationalStatus == 1 & is.na(earningsMainJob), earningsMainJob := 0]
@@ -72,8 +67,9 @@ build_income_earningsMainJob_pnad <- function(Data){
                 Data <- harmonizePNAD:::erase_just_created_vars(Data)
         }
 
-        Data[earningsMainJob >= crosswalk$missing_values, earningsMainJob := NA]
+        Data[earningsMainJob >= crosswalk_i$missing_values, earningsMainJob := NA]
 
         Data
 }
+
 

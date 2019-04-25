@@ -4,7 +4,6 @@ build_education_levelAttend_pnad <- function(Data){
         file_location <- system.file("extdata",
                                      "crosswalk_pnad_levelAttend.csv",
                                      package = "harmonizePNAD")
-        file_location = "C:/Users/Rogerio/Google Drive/RCodes/PacotesR/harmonizePNAD/inst/extdata/crosswalk_pnad_levelAttend.csv"
         crosswalk   <- data.table::fread(file_location)
 
         # Selecting the appropriate crosswalk for the current year
